@@ -127,4 +127,29 @@ public class GuideApp {
     }
 
 
+    //RAG检索增强 （通过PGVector数据库实现）
+
+
+    @Resource
+    VectorStore pgVectorVectorStore;
+
+    public String doChatWithRagPGVector(String message, String chatId){
+
+        ChatResponse chatResponse = client.prompt()
+                .user(message)
+                .system(SYSTEM_TEXT)
+                .advisors(a -> a.param(CONVERSATION_ID, chatId))
+                //自定义日志拦截器
+                .advisors(new MyLoggerAdvisor())
+                //开启RAG知识库(通过PGVector数据库)
+                .advisors(QuestionAnswerAdvisor.builder(pgVectorVectorStore).build())
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content： {}",content);
+
+        return content;
+    }
+
+
 }

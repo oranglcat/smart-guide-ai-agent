@@ -46,6 +46,15 @@ class GuideAppTest {
 
         String message = "西安的特色美食有哪些？哪里能吃到正宗小吃？";
 
-        guideApp.doChatWithRag(message,chatId);
+        guideApp.doChatWithRagCloud(message,chatId);
+    }
+
+    @Test
+    void doChatWithRagPGVector() {
+        String chatId = UUID.randomUUID().toString();
+
+        String message = "西安的特色美食有哪些？哪里能吃到正宗小吃？";
+
+        guideApp.doChatWithRagPGVector(message,chatId);
     }
 }
