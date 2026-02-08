@@ -15,7 +15,7 @@ import java.util.List;
 import static org.springframework.ai.vectorstore.pgvector.PgVectorStore.PgDistanceType.COSINE_DISTANCE;
 import static org.springframework.ai.vectorstore.pgvector.PgVectorStore.PgIndexType.HNSW;
 
-@Configuration
+//@Configuration
 public class PgVectorVectorStoreConfig {
 
     @Resource
@@ -24,7 +24,7 @@ public class PgVectorVectorStoreConfig {
     @Resource
     private GuideAppDocumentLoader documentLoader;
 
-    @Bean
+    //@Bean
     public VectorStore pgVectorVectorStore(JdbcTemplate jdbcTemplate, EmbeddingModel dashScopeEmbeddingModel) {
         VectorStore vectorStore = PgVectorStore.builder(jdbcTemplate, dashScopeEmbeddingModel)
                 .dimensions(1536)
