@@ -1,22 +1,21 @@
 package com.oran.oranaiagent.app;
 
-import com.alibaba.cloud.ai.dashscope.spec.DashScopeModel;
 import com.oran.oranaiagent.advisor.MyLoggerAdvisor;
-import com.oran.oranaiagent.advisor.ReReadingAdvisor;
 import com.oran.oranaiagent.chatMemory.FileBasedChatMemory;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.api.Advisor;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.InMemoryChatMemoryRepository;
-import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static com.alibaba.dashscope.app.AppKeywords.TOP_K;
 import static org.springframework.ai.chat.memory.ChatMemory.CONVERSATION_ID;
 
 @Component
@@ -81,4 +80,51 @@ public class GuideApp {
         log.info("guideReport: {}", chatResponse);
         return chatResponse;
     }
+
+    //应用本地Rag知识库的Ai旅游规划大师
+    @Resource
+    private VectorStore guideAppVectorStore;
+
+    public String doChatWithRag(String message, String chatId){
+
+        ChatResponse chatResponse = client.prompt()
+                .user(message)
+                .system(SYSTEM_TEXT)
+                .advisors(a -> a.param(CONVERSATION_ID, chatId))
+                //自定义日志拦截器
+                .advisors(new MyLoggerAdvisor())
+                //开启RAG知识库
+                .advisors(QuestionAnswerAdvisor.builder(guideAppVectorStore).build())
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content： {}",content);
+
+        return content;
+    }
+
+
+    //应用云服务RAG
+    @Resource
+    private Advisor guideAppRagCloudAdvisor;
+
+    public String doChatWithRagCloud(String message, String chatId){
+
+        ChatResponse chatResponse = client.prompt()
+                .user(message)
+                .system(SYSTEM_TEXT)
+                .advisors(a -> a.param(CONVERSATION_ID, chatId))
+                //自定义日志拦截器
+                .advisors(new MyLoggerAdvisor())
+                //开启云服务RAG知识库
+                .advisors(guideAppRagCloudAdvisor)
+                .call()
+                .chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        log.info("content： {}",content);
+
+        return content;
+    }
+
+
 }

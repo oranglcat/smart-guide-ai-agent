@@ -29,4 +29,23 @@ class GuideAppTest {
 
         GuideApp.guideReport guideReport = guideApp.doChatWithReport(message, chatId);
     }
+
+
+    @Test
+    void doChatWithRag() {
+        String chatId = UUID.randomUUID().toString();
+
+        String message = "西安的特色美食有哪些？哪里能吃到正宗小吃？";
+
+        guideApp.doChatWithRag(message,chatId);
+    }
+
+    @Test
+    void doChatWithRagCloud() {
+        String chatId = UUID.randomUUID().toString();
+
+        String message = "西安的特色美食有哪些？哪里能吃到正宗小吃？";
+
+        guideApp.doChatWithRag(message,chatId);
+    }
 }
