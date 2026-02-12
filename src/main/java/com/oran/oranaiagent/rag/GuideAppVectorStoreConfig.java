@@ -30,10 +30,10 @@ public class GuideAppVectorStoreConfig {
         SimpleVectorStore vectorStore = SimpleVectorStore.builder(dashscopeEmbeddingModel).build();
         List<Document> documentList = guideAppDocumentLoader.LoaderAllMarkDown();
         //文档切分器
-//        List<Document> spiltDocuments = tokenTextSplitter.splitCustomized(documentList);
+        //  List<Document> spiltDocuments = tokenTextSplitter.splitCustomized(documentList);
         //自动补充关键词元信息
-        List<Document> richerDocuments = keyWordRicher.keyWordRicher(documentList);
-        vectorStore.add(richerDocuments);
+       // List<Document> richerDocuments = keyWordRicher.keyWordRicher(documentList);
+        vectorStore.add(documentList);
         return vectorStore;
     }
 

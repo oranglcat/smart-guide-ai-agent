@@ -2,6 +2,8 @@ package com.oran.oranaiagent.app;
 
 import com.oran.oranaiagent.advisor.MyLoggerAdvisor;
 import com.oran.oranaiagent.chatMemory.FileBasedChatMemory;
+import com.oran.oranaiagent.invoke.QueryReWriter;
+import com.oran.oranaiagent.rag.GuideAppRagCustomAdvisor;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -11,6 +13,7 @@ import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvi
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Component;
 
@@ -85,16 +88,23 @@ public class GuideApp {
     @Resource
     private VectorStore guideAppVectorStore;
 
+    @Resource
+    private QueryReWriter queryReWriter;
+
     public String doChatWithRag(String message, String chatId){
 
+        String reWriteMessage = queryReWriter.doReWrite(message);
+
         ChatResponse chatResponse = client.prompt()
-                .user(message)
+                .user(reWriteMessage)
                 .system(SYSTEM_TEXT)
                 .advisors(a -> a.param(CONVERSATION_ID, chatId))
                 //自定义日志拦截器
                 .advisors(new MyLoggerAdvisor())
                 //开启RAG知识库
                 .advisors(QuestionAnswerAdvisor.builder(guideAppVectorStore).build())
+                //运用自定义的RAG检索增强服务 （文档查询器 + 上下文增强器）
+                //.advisors(GuideAppRagCustomAdvisor.createAdvisor(guideAppVectorStore,"西安"))
                 .call()
                 .chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
@@ -150,6 +160,27 @@ public class GuideApp {
 
         return content;
     }
+
+    @Resource
+    private ToolCallback[] allTools;
+
+    /*
+     * AI 工具调用
+     * */
+    public String doChatWithTools(String message, String chatId) {
+        ChatResponse chatResponse = client.prompt()
+                .user(message)
+                .advisors(a -> a.param(CONVERSATION_ID, chatId))
+                //开启日志拦截器
+                .advisors(new MyLoggerAdvisor())
+                //开启工具调用
+                .toolCallbacks(allTools)
+                .call().chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        return content;
+    }
+
+
 
 
 }
