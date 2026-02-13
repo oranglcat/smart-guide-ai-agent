@@ -3,6 +3,7 @@ spring:
     name: oran-ai-agent
   profiles:
     active: local
+
 server:
   port: 8123
   servlet:
@@ -24,3 +25,9 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: auto

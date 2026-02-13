@@ -65,17 +65,20 @@ class GuideAppTest {
         //testMessage("周末想带女朋友去上海约会，帮我在网上搜索推荐几个适合情侣的小众打卡地？");
 
 
-        testMessage("最近想去西安旅游，请你帮我在https://www.toutiao.com/article/7409941057254769186/?wid=1770891438952推荐几个景点");
+       // testMessage("最近想去西安旅游，请你帮我在https://www.toutiao.com/article/7409941057254769186/?wid=1770891438952推荐几个景点");
 
 
         //testMessage("直接下载一张适合做手机壁纸的星空情侣图片为文件");
 
 
-        testMessage("使用终端执行script.py脚本来生成数据分析报告");
+        //testMessage("使用终端执行script.py脚本来生成数据分析报告");
 
 
-        testMessage("保存我的旅游档案为txt文本文件");
+        //testMessage("保存我的旅游档案为txt文本文件");
 
+       // testMessage("我想在用户表中插入一条用户的信息，用户名为oran，年龄为18，邮箱为242952855@gamil.com");
+
+        testMessage("我想从数据库中查找一个用户的信息，用户的姓名为oran,请你将他的信息生成一份‘Oran’个人信息PDF给我");
 
         //testMessage("生成一份‘七夕约会计划’PDF，包含餐厅预订、活动流程和礼物清单");
     }
