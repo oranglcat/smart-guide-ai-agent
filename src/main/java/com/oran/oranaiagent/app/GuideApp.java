@@ -14,7 +14,9 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -44,7 +46,7 @@ public class GuideApp {
 
         ChatMemory chatMemory = new FileBasedChatMemory(fileDir);
         client = ChatClient.builder(dashscopeChatModel)
-                .defaultSystem(SYSTEM_TEXT)
+                //.defaultSystem(SYSTEM_TEXT)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build()
                     ,new MyLoggerAdvisor()
 //                        ,new ReReadingAdvisor()
@@ -175,6 +177,26 @@ public class GuideApp {
                 .advisors(new MyLoggerAdvisor())
                 //开启工具调用
                 .toolCallbacks(allTools)
+                .call().chatResponse();
+        String content = chatResponse.getResult().getOutput().getText();
+        return content;
+    }
+
+
+    @Autowired
+    private ToolCallbackProvider toolCallbackProvider;
+
+    /*
+     * AI MCP 工具调用
+     * */
+    public String doChatWithMCP(String message, String chatId) {
+        ChatResponse chatResponse = client.prompt()
+                .user(message)
+                .advisors(a -> a.param(CONVERSATION_ID, chatId))
+                //开启日志拦截器
+                .advisors(new MyLoggerAdvisor())
+                //开启工具调用
+                .toolCallbacks(toolCallbackProvider)
                 .call().chatResponse();
         String content = chatResponse.getResult().getOutput().getText();
         return content;
