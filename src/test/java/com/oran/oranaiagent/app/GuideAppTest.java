@@ -92,9 +92,17 @@ class GuideAppTest {
     @Test
     void doChatWithMCP() {
         //测试地图 MCP
+//        String chatId = UUID.randomUUID().toString();
+//        String message = "我的另一半住在西安雁塔区，请你帮我找到五公里内合适的约会地点";
+//        String result = guideApp.doChatWithMCP(message, chatId);
+//        Assertions.assertNotNull(result);
+
+        //测试图片搜索 MCP
+        //测试地图 MCP
         String chatId = UUID.randomUUID().toString();
-        String message = "我的另一半住在西安雁塔区，请你帮我找到五公里内合适的约会地点";
+        String message = "please find some Pari tower photo for me";
         String result = guideApp.doChatWithMCP(message, chatId);
         Assertions.assertNotNull(result);
+
     }
 }

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: oran-ai-search-mcp-server
+  profiles:
+    active: sse
+server:
+  port: 8127
