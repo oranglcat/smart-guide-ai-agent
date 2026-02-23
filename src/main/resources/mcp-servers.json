@@ -19,7 +19,9 @@
         "-jar",
         "oran-ai-search-mcp-server/target/oran-ai-search-mcp-server-0.0.1-SNAPSHOT.jar"
       ],
-      "env": {}
+      "env": {
+        "oran": "1afgagdgagadh"
+      }
     }
   }
 }

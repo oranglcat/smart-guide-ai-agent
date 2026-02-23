@@ -26,6 +26,7 @@ public class toolRegistration {
         WebScrapingTool webScrapingTool = new WebScrapingTool();
         TerminalOperationTool terminalOperationTool = new TerminalOperationTool();
         DatabaseTool databaseTool = new DatabaseTool(userMapper);
+        TerminateTool terminateTool = new TerminateTool();
         return ToolCallbacks.from(
                 baiduSearchTool,
                 fileOperationTool,
@@ -33,7 +34,8 @@ public class toolRegistration {
                 resourceDownloadTool,
                 webScrapingTool,
                 terminalOperationTool,
-                databaseTool
+                databaseTool,
+                terminateTool
         );
     }
 }

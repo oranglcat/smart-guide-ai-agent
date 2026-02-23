@@ -42,7 +42,8 @@ public class BaiduSearchTool {
             }
 
             //  安全截取前 N 条（防 toIndex > size）
-            List<Object> objects = organicResults.subList(0,5);
+            int endIndex = Math.min(5, organicResults.size());
+            List<Object> objects = organicResults.subList(0, endIndex);
 
             //转字符串
             StringBuilder sb = new StringBuilder();

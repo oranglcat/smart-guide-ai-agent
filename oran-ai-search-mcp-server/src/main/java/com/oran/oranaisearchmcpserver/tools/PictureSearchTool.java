@@ -82,7 +82,8 @@ public class PictureSearchTool {
 
             // 使用英文逗号连接
             return StrUtil.join(",", urls);
-
+            //测试stdio连接服务端获取环境变量
+//            return "https://" + System.getenv("oran");
         } catch (Exception e) {
             throw new RuntimeException("搜索图片失败：" + e.getMessage(), e);
         }

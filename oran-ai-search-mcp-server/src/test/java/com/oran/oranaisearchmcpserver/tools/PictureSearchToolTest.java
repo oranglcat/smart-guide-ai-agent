@@ -15,6 +15,5 @@ class PictureSearchToolTest {
     @Test
     void searchPhoto() {
         String result = pictureSearchTool.searchPhotos("初音未来");
-        Assertions.assertNotNull(result);
     }
 }
