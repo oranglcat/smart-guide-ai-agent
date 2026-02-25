@@ -18,6 +18,7 @@ import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class GuideApp {
 
         ChatMemory chatMemory = new FileBasedChatMemory(fileDir);
         client = ChatClient.builder(dashscopeChatModel)
-                //.defaultSystem(SYSTEM_TEXT)
+                .defaultSystem(SYSTEM_TEXT)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build()
                     ,new MyLoggerAdvisor()
 //                        ,new ReReadingAdvisor()
@@ -64,9 +65,21 @@ public class GuideApp {
                 .advisors(a -> a.param(CONVERSATION_ID, chatId))
                 .call().chatResponse();
 
-        String content = chatResponse.getResult().getOutput().toString();
-        log.info("content: {}", content);
+        String content = chatResponse.getResult().getOutput().getText();
+
         return content;
+    }
+
+    /*
+     * AI 基础对话方法  -- 支持多轮对话记忆 -- SSE流式输出
+     * */
+    public Flux<String> doChatWithStream(String message, String chatId) {
+
+        return client.prompt()
+                .user(message)
+                .advisors(a -> a.param(CONVERSATION_ID, chatId))
+                .stream()
+                .content();
     }
 
     record guideReport(String title, List<String> suggestions){}
@@ -82,7 +95,7 @@ public class GuideApp {
                 .advisors(a -> a.param(CONVERSATION_ID, chatId))
                 .call()
                 .entity(guideReport.class);
-        log.info("guideReport: {}", chatResponse);
+
         return chatResponse;
     }
 

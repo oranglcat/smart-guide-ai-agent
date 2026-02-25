@@ -2,6 +2,8 @@ spring:
   ai:
     mcp:
       server:
+        annotation-scanner:
+          enabled: true
         name: yu-image-search-mcp-server
         version: 0.0.1
         type: SYNC
