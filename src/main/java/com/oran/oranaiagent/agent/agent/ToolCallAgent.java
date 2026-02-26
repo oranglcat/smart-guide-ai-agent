@@ -3,6 +3,8 @@ package com.oran.oranaiagent.agent.agent;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatOptions;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oran.oranaiagent.agent.model.AgentState;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -103,9 +105,39 @@ public class ToolCallAgent extends ReActAgent{
         }
 
         String results= toolResponseMessage.getResponses().stream()
-                .map(toolResponse -> "工具" + toolResponse.name() + "完成了任务：" + toolResponse.responseData())
+                .map(toolResponse -> "工具" + toolResponse.name() + "完成了任务：" + formatSearchResult(toolResponse.responseData()))
                 .collect(Collectors.joining("\n"));
         log.info(results);
         return results;
+    }
+
+    /**
+     * 将搜索工具的原始 JSON 响应转换为易读的文本
+     */
+    private static String formatSearchResult(String json) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            JsonNode node = objectMapper.readTree(json);
+            // 提取关键字段，如果字段不存在则给默认值
+            String title = node.has("title") ? node.get("title").asText() : " ";
+            String snippet = node.has("snippet") ?  node.get("snippet").asText() : " ";
+            String source = node.has("displayed_link") ? node.get("displayed_link").asText() : node.has("link") ? node.get("link").asText() : " ";
+            String date = node.has("date") ? node.get("date").asText() : "";
+
+            // 构建易读的格式 (支持 Markdown 更佳)
+            StringBuilder sb = new StringBuilder();
+            sb.append(title).append("\n");
+            sb.append(source);
+            if (!date.isEmpty()) {
+                sb.append(" | 📅 时间：").append(date);
+            }
+            sb.append("\n");
+            sb.append(snippet);
+
+            return sb.toString();
+        } catch (Exception e) {
+            // 如果解析失败，返回原始内容以防丢失信息
+            return json;
+        }
     }
 }
