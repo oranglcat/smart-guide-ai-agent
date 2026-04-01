@@ -61,7 +61,7 @@ public class ToolCallAgent extends ReActAgent{
 
             this.toolCallResponse = chatResponse;
             AssistantMessage assistantMessage = chatResponse.getResult().getOutput();
-            //获取响应结果
+            //获取响应结果 - AI 的助手消息文本
             String result = assistantMessage.getText();
             List<AssistantMessage.ToolCall> toolCalls = assistantMessage.getToolCalls();
             log.info(getName() + "的思考：" + result);
@@ -73,9 +73,12 @@ public class ToolCallAgent extends ReActAgent{
             log.info(toolCallInfo);
 
             if(toolCalls.isEmpty()){
+                // 没有工具调用，直接返回 AI 的助手消息
                 getMessageList().add(assistantMessage);
                 return false;
             }else{
+                // 有工具调用，保存 AI 的原始回答
+                log.info(getName() + "的原始回答：" + result);
                 return true;
             }
         } catch (Exception e) {
@@ -108,7 +111,25 @@ public class ToolCallAgent extends ReActAgent{
                 .map(toolResponse -> "工具" + toolResponse.name() + "完成了任务：" + formatSearchResult(toolResponse.responseData()))
                 .collect(Collectors.joining("\n"));
         log.info(results);
-        return results;
+        
+        //2.获取 AI 的助手消息文本作为最终回答
+        // 从 toolCallResponse 中提取 AI 的原始回答
+        try {
+            AssistantMessage originalAssistantMessage = toolCallResponse.getResult().getOutput();
+            String aiAnswer = originalAssistantMessage.getText();
+            
+            log.info(getName() + "的最终回答：" + aiAnswer);
+            
+            //将最终回答添加到消息列表
+            getMessageList().add(originalAssistantMessage);
+            
+            //返回 AI 的助手消息文本
+            return aiAnswer;
+        } catch (Exception e) {
+            log.error(getName() + "获取最终回答时出错：" + e.getMessage());
+            //如果获取最终回答失败，至少返回工具结果
+            return results;
+        }
     }
 
     /**
